@@ -36,6 +36,7 @@ class N2p2ScfParser:
     
     @property
     def n2p2_energy(self):
+        energy = self.qel.get_energy()
         return f'energy {energy}'
     
     @property
