@@ -1,7 +1,3 @@
-from matplotlib.pyplot import cla
-import pandas as pd
-import numpy as np
-import glob
 from scf.get_lattice_info import QELattice
 from scf.scf_util import flatten
 
