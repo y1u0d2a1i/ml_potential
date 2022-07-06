@@ -47,7 +47,7 @@ class N2p2ScfParser:
             self.n2p2_atom,
             self.n2p2_energy,
             self.n2p2_charge,
-            'end' 
+            'end \n' 
         ]
         block = flatten(block)
         return block    
