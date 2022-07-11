@@ -6,7 +6,7 @@ from descriptors.sf.sfparamgen import SymFuncParamGenerator
 
 
 def get_sf_radial_params(elm: list[str], rcut: float, nb_param_pairs: int) -> pd.DataFrame:
-    sfGenerator = SymFuncParamGenerator(elements=['Si'], r_cutoff=rcut)
+    sfGenerator = SymFuncParamGenerator(elements=elm, r_cutoff=rcut)
     sfGenerator.symfunc_type = 'radial'
     sfGenerator.generate_radial_params(rule='imbalzano2018', mode='shift', nb_param_pairs=nb_param_pairs)
     
@@ -14,6 +14,19 @@ def get_sf_radial_params(elm: list[str], rcut: float, nb_param_pairs: int) -> pd
     columns = ['sftype', 'elm1', 'sfnum', 'elm2', 'eta', 'rs', 'rcut']
     df = pd.DataFrame(data=lines, columns=columns)
     df[['eta', 'rs', 'rcut']] = df[['eta', 'rs', 'rcut']].astype(float)
+    return df
+
+
+def get_sf_ang_params(elm: list[str], rcut: float, nb_param_pairs: int, ang_type: str, zetas: list[float], r_lower=3) -> pd.DataFrame:
+    sfGenerator = SymFuncParamGenerator(elements=elm, r_cutoff=rcut)
+    sfGenerator.symfunc_type = ang_type
+    sfGenerator.zetas = zetas
+    sfGenerator.generate_radial_params(rule='gastegger2018', mode='center', nb_param_pairs=nb_param_pairs, r_lower=r_lower)
+    
+    lines = get_sf_lines_from_generator(sfGenerator=sfGenerator)
+    columns = ['sftype', 'elm1', 'sfnum', 'elm2', 'elm3', 'eta', 'lam', 'zeta', 'rcut', 'rshift']
+    df = pd.DataFrame(data=lines, columns=columns)
+    df[['eta', 'lam', 'zeta', 'rcut', 'rshift']] = df[['eta', 'lam', 'zeta', 'rcut', 'rshift']].astype(float)
     return df
 
 

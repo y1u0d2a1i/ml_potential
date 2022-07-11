@@ -3,9 +3,15 @@ from scf.scf_util import flatten
 
 
 class N2p2ScfParser:
-    def __init__(self, path2scfout) -> None:
+    def __init__(self, path2scfout, is_comment=True) -> None:
         self.qel = QELattice(path_to_target=path2scfout)
-    
+        self.path2scfout = path2scfout
+        self.is_comment = is_comment
+        
+    @property
+    def n2p2_comment(self):
+        return f'comment {self.path2scfout} .'
+
     @property
     def n2p2_cell(self):
         line = []
@@ -41,13 +47,24 @@ class N2p2ScfParser:
     
     @property
     def n2p2_block(self):
-        block = [
-            'begin',
-            self.n2p2_cell,
-            self.n2p2_atom,
-            self.n2p2_energy,
-            self.n2p2_charge,
-            'end \n' 
-        ]
+        if self.is_comment:
+            block = [
+                'begin',
+                self.n2p2_comment,
+                self.n2p2_cell,
+                self.n2p2_atom,
+                self.n2p2_energy,
+                self.n2p2_charge,
+                'end \n' 
+            ]
+        else:
+            block = [
+                'begin',
+                self.n2p2_cell,
+                self.n2p2_atom,
+                self.n2p2_energy,
+                self.n2p2_charge,
+                'end \n' 
+            ]
         block = flatten(block)
         return block    
