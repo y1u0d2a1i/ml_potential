@@ -16,6 +16,16 @@ def get_sf_radial_params(elm: list[str], rcut: float, nb_param_pairs: int) -> pd
     df[['eta', 'rs', 'rcut']] = df[['eta', 'rs', 'rcut']].astype(float)
     return df
 
+def get_sf_params_str(df: pd.DataFrame):
+    """
+    get sf params strings for n2p2 setting file
+    """
+    lines = []
+    for param in df.values:
+        param = [str(i) for i in param]
+        lines.append(' '.join(param))
+    return lines
+        
 
 def get_sf_ang_params(elm: list[str], rcut: float, nb_param_pairs: int, ang_type: str, zetas: list[float], r_lower=3) -> pd.DataFrame:
     sfGenerator = SymFuncParamGenerator(elements=elm, r_cutoff=rcut)
