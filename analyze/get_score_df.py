@@ -44,6 +44,7 @@ def convert_forceout_to_df(path2file):
     rows = l_strip[idx+2:]
     rows = [remove_empty_from_array(row.split(' ')) for row in rows]
     df = pd.DataFrame(data=rows, columns=columns)
+    df = df.astype({'index_s': int, 'index_a': int, 'Fref': float, 'Fnnp': float})
     return df
 
 
@@ -59,6 +60,7 @@ def convert_energyout_to_df(path2file):
     rows = l_strip[idx+2:]
     rows = [remove_empty_from_array(row.split(' ')) for row in rows]
     df = pd.DataFrame(data=rows, columns=columns)
+    df = df.astype({'index': int, 'Eref': float, 'Ennp': float})
     return df
 
 
@@ -114,5 +116,21 @@ def get_all_score_df(path2target):
             all_score_dict[idx_start+3] = e_train_score
     score_df = pd.DataFrame.from_dict(all_score_dict, orient='index')
     return score_df
+
+
+def get_each_epoch_result_df(path2target, epoch):
+    """
+    epochごとの結果(Energy, force)取得
+    """
+    f_tests, f_trains, e_tests, e_trains = get_each_epoch_files(path2target)
+    for f_test, f_train, e_test, e_train in  zip(f_tests, f_trains, e_tests, e_trains):
+        if validate_epoch_file(f_test, f_train, e_test, e_train):
+            if epoch == int(get_epoch(f_test)):
+                f_test_df = convert_forceout_to_df(f_test)
+                f_train_df = convert_forceout_to_df(f_train)
+                e_test_df = convert_energyout_to_df(e_test)
+                e_train_df = convert_energyout_to_df(e_train)
+                break
+    return f_test_df, f_train_df, e_test_df, e_train_df
 
 
