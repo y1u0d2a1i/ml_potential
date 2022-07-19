@@ -26,10 +26,10 @@ class CreateLammpsTemplate():
         return l_strip
     
     @staticmethod
-    def get_lattice_start_idx(lines: list[str]) -> int:
+    def get_param_idx(lines: list[str], param: str) -> int:
         start_idx = None
         for i, line in enumerate(lines):
-            if 'lattice custom 1.0 &' in line:
+            if param in line:
                 start_idx = i
                 break
         return start_idx
@@ -44,6 +44,14 @@ class CreateLammpsTemplate():
             i.append('&')
         cell = [' '.join(list(map(str, i))) for i in cell]
         return cell
+    
+    
+    def get_region_prism_factors(self) -> str:
+        cell = list(map(lambda x: list(map(str, x)), self.structure.get_cell()))
+        xlo, ylo, zlo = '0.0', '0.0', '0.0'
+        xhi, yhi, zhi = cell[0][0], cell[1][1], cell[2][2]
+        xy, xz, yz = cell[1][0], cell[2][0], cell[2][1]
+        return f'region myreg prism {xlo} {xhi} {ylo} {yhi} {zlo} {zhi} {xy} {xz} {yz} units box'
     
     
     def get_atoms_for_lmp(self) -> list[str]:
@@ -61,11 +69,14 @@ class CreateLammpsTemplate():
         shutil.copy(os.path.join(self.path2template, 'zbl.in'), self.path2out)
 
         l_strip = self.get_lmp_template_line(filename=template_filename)
-        start_idx = self.get_lattice_start_idx(l_strip)
+        start_idx = self.get_param_idx(l_strip, 'lattice custom 1.0 &')
+        region_idx = self.get_param_idx(l_strip, 'region')
+        
         cell = self.get_cell_for_lmp()
         atoms = self.get_atoms_for_lmp()
         
         # insert cell and atoms to lmp template lines
+        l_strip[region_idx] = self.get_region_prism_factors()
         l_strip.insert(start_idx+1, cell)
         l_strip.insert(start_idx+2, atoms)
         
@@ -91,5 +102,6 @@ class CreateLammpsTemplate():
             obj.create_template(template_filename=template_filename, out_filename=out_filename)
             print(f'A lammps template file is successfully created to [{path2out}]')
         except Exception as e:
+            print(f'failedpco [{path2out}]')
             raise e
         
