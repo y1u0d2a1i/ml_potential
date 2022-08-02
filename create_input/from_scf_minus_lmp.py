@@ -1,4 +1,3 @@
-from ast import Return
 from scf.scf_util import flatten
 from create_input.from_scf import N2p2ScfParser
 from create_input.lmp.info_from_lmp_out import LammpsLogParser
@@ -9,6 +8,7 @@ from scf.get_lattice_info import QELattice
 class ScfMinusLammpsN2p2():
     def __init__(self, path2scfout, dump_filename, is_comment=True) -> None:
         self.qel = QELattice(path_to_target=path2scfout)
+        self.num_atom = self.qel.num_atom
         self.path2scfout = path2scfout
         self.is_comment = is_comment
         self.lmp_log_parser = LammpsLogParser(path2target=path2scfout, dump_filename=dump_filename)
