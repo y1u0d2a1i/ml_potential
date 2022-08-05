@@ -7,13 +7,13 @@ class SfFuncVal():
 
 
     @classmethod
-    def get_g2_value(cls, g2_params: list[float], structure, species, rcut) -> pd.DataFrame:
+    def get_g2_value(cls, g2_params: list[float], structure, species, rcut, periodic=True) -> pd.DataFrame:
         columns = cls.get_g2_columns(g2_params)
         acsf = ACSF(
             species=species,
             rcut=rcut,
             g2_params=g2_params,
-            periodic=True,
+            periodic=periodic,
         )
         sf_value = acsf.create(system=structure)
         return pd.DataFrame(data=sf_value, columns=columns)
