@@ -2,8 +2,16 @@ import numpy as np
 import pandas as pd
 from ase.io import lammpsdata
 
+def get_z_position_from_single_dump(path2dumpfile):
+    structure = lammpsdata.read_lammps_data(file=path2dumpfile, style='atomic')
+    position_df = pd.DataFrame(data=structure.positions, columns=['x', 'y', 'z'])
+    z_position = position_df['z'].values
+
+    return z_position
+
+
 def get_depth_profile(
-        path2dumpfile: str,
+        z_position: np.ndarray,
         x_width: float,
         y_width: float,
         z_width: float,
@@ -14,7 +22,7 @@ def get_depth_profile(
     """Calculate depth profile for given lmp dump file
 
     Args:
-        path2dumpfile (str): path to lmp dumpfile
+        z_position (np.ndarray): list of z_position.
         bins (int, optional): number of bins. Defaults to 200.
         step (int, optional): interval between each bin. Defaults to 0.5.
         moving_average_with_depth_interval (int, optional): depth interval for moving average. Defaults to 3.
@@ -23,9 +31,6 @@ def get_depth_profile(
         pd.DataFrame: depth[ang], ma(moving average)[cm^-3]
     """
     ang3tocm3 = 10e24
-    structure = lammpsdata.read_lammps_data(file=path2dumpfile, style='atomic')
-    position_df = pd.DataFrame(data=structure.positions, columns=['x', 'y', 'z'])
-    z_position = position_df['z'].values
 
     # convert z-position to depth
     depth = z_position - z_width
