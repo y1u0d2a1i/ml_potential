@@ -2,6 +2,7 @@ from ase.io import read
 import os
 import shutil
 from ml_utils.util import flatten
+from scf.get_relax_lattice_info import RelaxQELattice
 
 
 class CreateLammpsTemplate():
@@ -9,7 +10,13 @@ class CreateLammpsTemplate():
         self.path2scf = path2scf
         self.path2template = path2template
         self.path2out = path2out
-        self.structure = read(os.path.join(path2scf, 'scf.in'), format='espresso-in')
+        self.is_relax = os.path.exists(os.path.join(path2scf, 'relax.in'))
+
+        if self.is_relax:
+            self.structure = read(os.path.join(path2scf, 'relax.in'), format='espresso-in')
+        else:
+            self.structure = read(os.path.join(path2scf, 'scf.in'), format='espresso-in')
+
     
     
     def get_lmp_template_line(self, filename='zbl.in') -> list[str]:
@@ -56,7 +63,13 @@ class CreateLammpsTemplate():
     
     def get_atoms_for_lmp(self) -> list[str]:
         atoms = []
-        for atom in list(map(lambda x: list(x), self.structure.get_scaled_positions())):
+
+        scaled_positions = self.structure.get_scaled_positions()
+        if self.is_relax:
+            rqel = RelaxQELattice(self.path2scf)
+            scaled_positions = rqel.get_scaled_coord()
+
+        for atom in list(map(lambda x: list(x), scaled_positions)):
             atom = list(map(lambda x: str(round(x, 6)), atom))
             atom.insert(0, 'basis')
             atom.append('&')
@@ -103,5 +116,6 @@ class CreateLammpsTemplate():
             print(f'A lammps template file is successfully created to [{path2out}]')
         except Exception as e:
             print(f'failedpco [{path2out}]')
+            print(e)
             raise e
         
