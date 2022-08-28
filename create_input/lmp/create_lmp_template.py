@@ -71,6 +71,9 @@ class CreateLammpsTemplate():
 
         for atom in list(map(lambda x: list(x), scaled_positions)):
             atom = list(map(lambda x: str(round(x, 6)), atom))
+            if '1.0' in atom:
+                idx = atom.index('1.0')
+                atom[idx] = '0.99999'
             atom.insert(0, 'basis')
             atom.append('&')
             atoms.append(' '.join(atom))
