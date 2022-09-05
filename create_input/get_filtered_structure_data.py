@@ -11,15 +11,11 @@ def get_filtered_structure_path(energy_threshold: float) -> list[str]:
 
     filtered_data = []
     for d in all_dirs:
-        is_relax = False
-        if os.path.exists(os.path.join(d, 'relax.in')):
-            is_relax = True
         try:
             n2p2_obj = ScfMinusLammpsN2p2(
                 path2scfout=d,
                 dump_filename='dump.out',
-                is_comment=True,
-                is_relax=is_relax
+                is_comment=True
             )
             if n2p2_obj.get_calced_energy() / n2p2_obj.num_atom > energy_threshold:
                 filtered_data.append(d)

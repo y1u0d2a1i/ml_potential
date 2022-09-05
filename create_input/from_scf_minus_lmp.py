@@ -2,13 +2,14 @@ from scf.scf_util import flatten
 from create_input.from_scf import N2p2ScfParser
 from create_input.lmp.info_from_lmp_out import LammpsLogParser
 from scf.get_lattice_info import QELattice
+from scf.qelattice import get_qel
 from scf.get_relax_lattice_info import RelaxQELattice
 
 
 
 class ScfMinusLammpsN2p2():
-    def __init__(self, path2scfout, dump_filename, is_comment=True, is_relax=False) -> None:
-        self.qel = RelaxQELattice(path2scfout) if is_relax else QELattice(path_to_target=path2scfout)
+    def __init__(self, path2scfout, dump_filename, is_comment=True) -> None:
+        self.qel = get_qel(path2scfout)
         self.num_atom = self.qel.num_atom
         self.path2scfout = path2scfout
         self.is_comment = is_comment
