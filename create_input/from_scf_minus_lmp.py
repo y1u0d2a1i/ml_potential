@@ -1,9 +1,6 @@
 from scf.scf_util import flatten
-from create_input.from_scf import N2p2ScfParser
 from create_input.lmp.info_from_lmp_out import LammpsLogParser
-from scf.get_lattice_info import QELattice
 from scf.qelattice import get_qel
-from scf.get_relax_lattice_info import RelaxQELattice
 
 
 
