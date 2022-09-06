@@ -2,6 +2,7 @@ from glob import glob
 import pandas as pd
 from ml_utils.util import flatten
 from scf.get_lattice_info import QELattice
+from scf.qelattice import get_qel
 
 
 def get_path2data():
@@ -24,7 +25,7 @@ def get_all_structure_info():
     all_dirs = get_silicon_all_scf_data()
     result = []
     for path in all_dirs:
-        qel = QELattice(path)
+        qel = get_qel(path)
         mpid = list(filter(lambda x: 'mp-' in x, path.split('/')))[0]
         n_atom = qel.num_atom
         result.append([mpid, n_atom])
