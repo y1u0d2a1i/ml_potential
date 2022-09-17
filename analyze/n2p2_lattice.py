@@ -32,14 +32,20 @@ class N2p2Lattice():
 
     
     def get_mpid(self):
-        comment = self.structure[1]
-        mpid = list(filter(lambda x: 'mp-' in x, comment.split(' ')[1].split('/')))[0]
-        return mpid
+        try:
+            comment = self.structure[1]
+            mpid = list(filter(lambda x: 'mp-' in x, comment.split(' ')[1].split('/')))[0]
+            return mpid
+        except:
+            return comment.split(' ')[1].split(':')[1]
 
     
     def get_path(self):
-        comment = self.structure[1]
-        return comment.split(' ')[1]
+        try:
+            comment = self.structure[1]
+            return comment.split(' ')[1]
+        except:
+            return None
 
 
     def get_cell(self):

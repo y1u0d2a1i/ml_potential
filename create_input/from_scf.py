@@ -1,10 +1,10 @@
-from scf.get_lattice_info import QELattice
+from scf.qelattice import get_qel
 from scf.scf_util import flatten
 
 
 class N2p2ScfParser:
     def __init__(self, path2scfout, is_comment=True) -> None:
-        self.qel = QELattice(path_to_target=path2scfout)
+        self.qel = get_qel(path2scfout)
         self.path2scfout = path2scfout
         self.is_comment = is_comment
         

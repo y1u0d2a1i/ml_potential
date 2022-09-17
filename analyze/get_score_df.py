@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import os
 import matplotlib.pyplot as plt
 import seaborn as sns
 import glob
@@ -36,6 +37,7 @@ def convert_forceout_to_df(path2file):
     """
     docstring
     """
+    _, conv_energy, conv_length = get_convert_factor('/'.join(path2file.split('/')[:-1]))
     with open(path2file, mode='r') as f:
         l_strip = [s.strip() for s in f.readlines()]
         
@@ -44,7 +46,20 @@ def convert_forceout_to_df(path2file):
     rows = l_strip[idx+2:]
     rows = [remove_empty_from_array(row.split(' ')) for row in rows]
     df = pd.DataFrame(data=rows, columns=columns)
-    df = df.astype({'index_s': int, 'index_a': int, 'Fref': float, 'Fnnp': float})
+    df = df.astype({
+        'index_s': int, 
+        'index_a': int, 
+        'Fref': float, 
+        'Fnnp': float
+        })
+
+    df['Fref_original'] = df['Fref'] * ( conv_length / conv_energy )
+    df['Fnnp_original'] = df['Fnnp'] * ( conv_length / conv_energy )
+    df = df.astype({
+        'Fref_original': float,
+        'Fnnp_original': float
+        })
+
     return df
 
 
@@ -52,6 +67,9 @@ def convert_energyout_to_df(path2file):
     """
     docstring
     """
+    mean_energy, conv_energy, _ = get_convert_factor('/'.join(path2file.split('/')[:-1]))
+    std_energy = 1 / conv_energy
+
     with open(path2file, mode='r') as f:
         l_strip = [s.strip() for s in f.readlines()]
         
@@ -61,6 +79,11 @@ def convert_energyout_to_df(path2file):
     rows = [remove_empty_from_array(row.split(' ')) for row in rows]
     df = pd.DataFrame(data=rows, columns=columns)
     df = df.astype({'index': int, 'Eref': float, 'Ennp': float})
+
+    df['Eref_original'] = df['Eref'] * std_energy + mean_energy
+    df['Ennp_original'] = df['Ennp'] * std_energy + mean_energy
+    df = df.astype({'Eref_original': float, 'Ennp_original': float})
+
     return df
 
 
@@ -132,5 +155,20 @@ def get_each_epoch_result_df(path2target, epoch):
                 e_train_df = convert_energyout_to_df(e_train)
                 break
     return f_test_df, f_train_df, e_test_df, e_train_df
+
+
+def get_convert_factor(path2target):
+    with open(os.path.join(path2target, 'input.nn'), mode='r') as f:
+        lines = [s.strip() for s in f.readlines()]
+
+    for l in lines:
+        if 'mean_energy' in l: 
+            mean_energy = float(l.split(' ')[-1])
+        if 'conv_energy' in l:
+            conv_energy = float(l.split(' ')[-1])
+        if 'conv_length' in l:
+            conv_length = float(l.split(' ')[-1])
+    
+    return mean_energy, conv_energy, conv_length
 
 
