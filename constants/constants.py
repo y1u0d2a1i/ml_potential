@@ -21,6 +21,37 @@ def get_silicon_all_scf_data():
     return all_path
 
 
+def get_silicon_all_scf_data_sd():
+    def add_structure_path(path, all_dirs):
+        dirs = glob(f'{path}/*')
+        for d in dirs:
+            scf_dirs = glob(f'{d}/result/scf*')
+            if len(scf_dirs) == 0:
+                continue
+            for scf_d in scf_dirs:
+                all_dirs.append(scf_d)
+    
+    all_dirs = []
+
+    path = '/Users/y1u0d2/desktop/Lab/result/qe/Si/mp-149/coord/sd'
+    add_structure_path(path, all_dirs)
+
+    path = '/Users/y1u0d2/desktop/Lab/result/qe/Si/mp-1079649/coord'
+    add_structure_path(path, all_dirs)
+
+    path = '/Users/y1u0d2/desktop/Lab/result/qe/Si/mp-165/coord'
+    add_structure_path(path, all_dirs)
+
+    path = '/Users/y1u0d2/desktop/Lab/result/qe/Si/mp-571520/coord'
+    add_structure_path(path, all_dirs)
+
+    path = '/Users/y1u0d2/desktop/Lab/result/qe/Si/mp-92/coord'
+    add_structure_path(path, all_dirs)
+
+    return all_dirs
+
+    
+
 def get_all_structure_info():
     all_dirs = get_silicon_all_scf_data()
     result = []
