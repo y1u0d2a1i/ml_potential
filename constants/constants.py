@@ -9,7 +9,15 @@ def get_path2data():
     return '/Users/y1u0d2/desktop/Lab/data/qe_data/Si'
 
 
-def get_silicon_all_scf_data():
+def create_structure_dict(all_path):
+    mpid_list = set([list(filter(lambda x: 'mp-' in x, d.split('/')))[0] for d in all_path])
+    all_dirs_dict = {}
+    for mpid in mpid_list:
+        all_dirs_dict[mpid] = list(filter(lambda x: f'/{mpid}/' in x, all_path))
+    return all_dirs_dict
+
+
+def get_silicon_all_scf_data(as_dict=False):
     path2data = get_path2data()
     all_path = []
     material_dirs = glob(f'{path2data}/mp-*')
@@ -18,10 +26,14 @@ def get_silicon_all_scf_data():
                         set(glob(f'{material_dir}/*.*')))
         all_path.append(structures)
     all_path = list(flatten(all_path))
-    return all_path
+
+    if as_dict:
+        return create_structure_dict(all_path=all_path)
+    else:
+        return all_path
 
 
-def get_silicon_all_scf_data_sd():
+def get_silicon_all_scf_data_sd(as_dict=False):
     def add_structure_path(path, all_dirs):
         dirs = glob(f'{path}/*')
         for d in dirs:
@@ -48,7 +60,10 @@ def get_silicon_all_scf_data_sd():
     path = '/Users/y1u0d2/desktop/Lab/result/qe/Si/mp-92/coord'
     add_structure_path(path, all_dirs)
 
-    return all_dirs
+    if as_dict:
+        return create_structure_dict(all_path=all_dirs)
+    else:
+        return all_dirs
 
     
 
