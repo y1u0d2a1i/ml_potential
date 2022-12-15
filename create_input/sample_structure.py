@@ -1,5 +1,9 @@
 from scf.qelattice import get_qel
 import pandas as pd
+import numpy as np
+from ase.io import read
+from pymatgen.io.ase import AseAtomsAdaptor
+import os
 
 def remove_duplicated_structures(all_dirs) -> pd.DataFrame:
     """ Sample structure by removing structures 
@@ -38,3 +42,25 @@ def remove_duplicated_structures(all_dirs) -> pd.DataFrame:
     
     sampled_df = pd.concat(sampled_mpid_df_list)
     return sampled_df
+
+
+def sample_structures_by_neighbors(rcut: float, all_dirs: list) -> list:
+    """get structures which don't have neighbors inside rcut sphere
+
+    Args:
+        rcut (float): radius of cutoff sphere
+        all_dirs (list): list of path to directory
+
+    Returns:
+        list(str): filtered list of path to directory
+    """
+    n_sites_list = []
+    for path in all_dirs:
+        structure = read(os.path.join(path, 'scf.in'), format='espresso-in')
+        pg_structure = AseAtomsAdaptor.get_structure(structure)
+        all_neighbors = pg_structure.get_all_neighbors(r=rcut)
+        mpid = list(filter(lambda x: 'mp-' in x, path.split('/')))[0]
+        n_sites_list.append([mpid, path, np.max([len(neighbors_each_site) for neighbors_each_site in all_neighbors])])
+    
+    site_df = pd.DataFrame(data=n_sites_list, columns=['mpid', 'path', 'n_site_max'])
+    return site_df.query('n_site_max == 0')['path'].values

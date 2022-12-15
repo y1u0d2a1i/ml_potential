@@ -48,6 +48,9 @@ def get_silicon_all_scf_data_sd(as_dict=False):
     path = '/Users/y1u0d2/desktop/Lab/result/qe/Si/mp-149/coord/sd'
     add_structure_path(path, all_dirs)
 
+    path = '/Users/y1u0d2/desktop/Lab/result/qe/Si/mp-149/atom8/coord'
+    add_structure_path(path, all_dirs)
+
     path = '/Users/y1u0d2/desktop/Lab/result/qe/Si/mp-1079649/coord'
     add_structure_path(path, all_dirs)
 
