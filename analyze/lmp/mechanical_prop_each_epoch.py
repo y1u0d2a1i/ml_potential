@@ -36,8 +36,8 @@ def make_elastic_dirs(path2n2p2_result: str, path2mechanical_prop_files: str) ->
         # copy n2p2 files
         shutil.copy(os.path.join(path2n2p2_result, 'input.nn'), path2epoch)
         shutil.copy(os.path.join(path2n2p2_result, 'scaling.data'), path2epoch)
-        shutil.copy(os.path.join(path2n2p2_result, weights_f), path2epoch)
-        os.rename(os.path.join(path2epoch, weights_f), os.path.join(path2epoch, 'weights.014.data'))
+        shutil.copy(weights_f, path2epoch)
+        os.rename(os.path.join(path2epoch, weights_f.split('/')[-1]), os.path.join(path2epoch, 'weights.014.data'))
 
         # change potential.mod
         with open(os.path.join(path2epoch, 'potential.mod'), mode='r') as f:
