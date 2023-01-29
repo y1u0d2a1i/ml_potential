@@ -8,6 +8,18 @@ class SfFuncVal():
 
     @classmethod
     def get_g2_value(cls, g2_params: list[float], structure, species, rcut, periodic=True) -> pd.DataFrame:
+        """get g2_value of symmetry function
+
+        Args:
+            g2_params (list[float]): list of parameters which has [eta, rs]
+            structure (_type_): ase.Atoms
+            species (_type_): species
+            rcut (_type_): cutoff radius
+            periodic (bool, optional): does apply pbc. Defaults to True.
+
+        Returns:
+            pd.DataFrame: _description_
+        """
         columns = cls.get_g2_columns(g2_params, rcut)
         acsf = ACSF(
             species=species,

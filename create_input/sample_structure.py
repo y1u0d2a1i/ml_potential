@@ -44,7 +44,7 @@ def remove_duplicated_structures(all_dirs) -> pd.DataFrame:
     return sampled_df
 
 
-def sample_structures_by_neighbors(rcut: float, all_dirs: list) -> list:
+def filter_structures_by_interatomic_distance(rcut: float, all_dirs: list) -> list:
     """get structures which don't have neighbors inside rcut sphere
 
     Args:
