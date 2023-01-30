@@ -5,10 +5,13 @@ from ml_utils.util import remove_empty_from_array
 from descriptors.sf.sfparamgen import SymFuncParamGenerator
 
 
-def get_sf_radial_params(elm: list[str], rcut: float, nb_param_pairs: int) -> pd.DataFrame:
+def get_sf_radial_params(elm: list[str], rcut: float, nb_param_pairs: int, sf_mode='shift') -> pd.DataFrame:
+    if not sf_mode in ['shift', 'center']:
+        raise Exception('Your sf_mode is not available. Set shift or center')
+    
     sfGenerator = SymFuncParamGenerator(elements=elm, r_cutoff=rcut)
     sfGenerator.symfunc_type = 'radial'
-    sfGenerator.generate_radial_params(rule='imbalzano2018', mode='shift', nb_param_pairs=nb_param_pairs)
+    sfGenerator.generate_radial_params(rule='imbalzano2018', mode=sf_mode, nb_param_pairs=nb_param_pairs)
     
     lines = get_sf_lines_from_generator(sfGenerator=sfGenerator)
     columns = ['sftype', 'elm1', 'sfnum', 'elm2', 'eta', 'rs', 'rcut']
