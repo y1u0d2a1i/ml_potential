@@ -72,7 +72,7 @@ def get_silicon_all_scf_data_sd(as_dict=False):
     path = '/Users/y1u0d2/desktop/Lab/result/qe/Si/mp-four/coord'
     add_structure_path(path, all_dirs)
 
-    path = '/Users/y1u0d2/desktop/Lab/result/qe/Si/mp-149_dimer/coord/01/result'
+    path = '/Users/y1u0d2/desktop/Lab/result/qe/Si/mp-149_dimer/coord/spin/result'
     all_dirs = all_dirs + glob(f'{path}/scf*')
 
     if as_dict:
