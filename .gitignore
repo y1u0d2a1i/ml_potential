@@ -132,8 +132,8 @@ dmypy.json
 .idea/
 
 # wip directory
-wip/
-*/wip/
+# wip/
+# */wip/
 
 # scripts directory
 # scripts/
