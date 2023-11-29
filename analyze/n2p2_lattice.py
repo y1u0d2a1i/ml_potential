@@ -37,7 +37,8 @@ class N2p2Lattice():
             mpid = list(filter(lambda x: 'mp-' in x, comment.split(' ')[1].split('/')))[0]
             return mpid
         except:
-            return comment.split(' ')[1].split(':')[1]
+            return None
+            # return comment.split(' ')[1].split(':')[1]
 
     
     def get_path(self):

@@ -38,14 +38,13 @@ def convert_forceout_to_df(path2file):
     docstring
     """
     _, conv_energy, conv_length = get_convert_factor('/'.join(path2file.split('/')[:-1]))
-    with open(path2file, mode='r') as f:
-        l_strip = [s.strip() for s in f.readlines()]
-        
     columns = ['index_s', 'index_a', 'Fref', 'Fnnp']
-    idx = get_idx_from_columns(columns, lines=l_strip)
-    rows = l_strip[idx+2:]
-    rows = [remove_empty_from_array(row.split(' ')) for row in rows]
-    df = pd.DataFrame(data=rows, columns=columns)
+    # idx = get_idx_from_columns(columns, lines=l_strip)
+    # rows = l_strip[idx+2:]
+    # rows = [row.split() for row in rows]
+    # df = pd.DataFrame(data=rows, columns=columns)
+    arr = np.loadtxt(path2file, skiprows=13)
+    df = pd.DataFrame(data=arr, columns=columns)
     df = df.astype({
         'index_s': int, 
         'index_a': int, 
@@ -70,14 +69,16 @@ def convert_energyout_to_df(path2file):
     mean_energy, conv_energy, _ = get_convert_factor('/'.join(path2file.split('/')[:-1]))
     std_energy = 1 / conv_energy
 
-    with open(path2file, mode='r') as f:
-        l_strip = [s.strip() for s in f.readlines()]
+    # with open(path2file, mode='r') as f:
+    #     l_strip = [s.strip() for s in f.readlines()]
         
-    columns = ['index', 'Eref', 'Ennp']
-    idx = get_idx_from_columns(columns, lines=l_strip)
-    rows = l_strip[idx+2:]
-    rows = [remove_empty_from_array(row.split(' ')) for row in rows]
-    df = pd.DataFrame(data=rows, columns=columns)
+    # columns = ['index', 'Eref', 'Ennp']
+    # idx = get_idx_from_columns(columns, lines=l_strip)
+    # rows = l_strip[idx+2:]
+    # rows = [row.split() for row in rows]
+    # df = pd.DataFrame(data=rows, columns=columns)
+    arr = np.loadtxt(path2file, skiprows=13)
+    df = pd.DataFrame(data=arr, columns=['index', 'Eref', 'Ennp'])
     df = df.astype({'index': int, 'Eref': float, 'Ennp': float})
 
     df['Eref_original'] = df['Eref'] * std_energy + mean_energy
@@ -115,6 +116,7 @@ def calc_energy_score(epoch, data_type, energy_df: pd.DataFrame) -> dict:
 def get_epoch(path):
     return path.split('/')[-1].split('.')[1]
 
+
 def validate_epoch_file(f_test, f_train, e_test, e_train):
     if get_epoch(f_test) == get_epoch(f_train) == get_epoch(e_test) == get_epoch(e_train):
         return True
@@ -124,10 +126,12 @@ def validate_epoch_file(f_test, f_train, e_test, e_train):
     
 def get_all_score_df(path2target):
     f_tests, f_trains, e_tests, e_trains = get_each_epoch_files(path2target)
+    num_epoch = len(f_tests)
     all_score_dict = {}
     for i, (f_test, f_train, e_test, e_train) in  enumerate(zip(f_tests, f_trains, e_tests, e_trains)):
         if validate_epoch_file(f_test, f_train, e_test, e_train):
             epoch = int(get_epoch(f_test))
+            print(f'epoch: {epoch} out of {num_epoch}')
             f_test_score = calc_force_score(epoch=epoch, data_type='test', force_df=convert_forceout_to_df(f_test))
             f_train_score = calc_force_score(epoch=epoch, data_type='train', force_df=convert_forceout_to_df(f_train))
             e_test_score = calc_energy_score(epoch=epoch, data_type='test', energy_df=convert_energyout_to_df(e_test))
